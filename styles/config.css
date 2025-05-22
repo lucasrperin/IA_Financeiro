@@ -1,0 +1,36 @@
+/* input sem borda direita e sem raio no canto superior/direito */
+#api_key {
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* garante que cada um mantenha seu raio externo */
+#api_key {
+  border-top-left-radius: var(--bs-border-radius);
+  border-bottom-left-radius: var(--bs-border-radius);
+}
+
+/* 1) Dá ao botão o mesmo contorno do input: #DEE2E6 */
+#toggleApiKey {
+  border: 1px solid #DEE2E6;
+  /* remove só a borda esquerda para fundir-se com o input */
+  border-left: none;
+}
+
+/* 2) Estado hover/focus mantém a mesma cor e tira o box-shadow padrão */
+#toggleApiKey:hover,
+#toggleApiKey:focus {
+  border-color: #DEE2E6 !important;
+  box-shadow: none !important;
+}
+
+/* 3) Ajusta o radius pra ficar certinho junto ao input */
+/* (supondo que o input tenha border-top-left/bottom-left radius) */
+#toggleApiKey {
+  border-top-right-radius: var(--bs-border-radius);
+  border-bottom-right-radius: var(--bs-border-radius);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+

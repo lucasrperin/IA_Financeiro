@@ -1,34 +1,56 @@
-document.getElementById('btnAnalise').addEventListener('click', async () => {
-  const rows = Array.from(
-    document.querySelectorAll('#tblDespesas tbody tr')
-  ).map(tr => {
-    const [v, c, d, desc] = [...tr.children].map(td => td.innerText);
-    return {
-      valor: parseFloat(v.replace('.', '').replace(',', '.')),
-      categoria: c,
-      data: d,
-      descricao: desc
-    };
-  });
+// mantém histórico em memória
+const chatWindow = document.getElementById('chatWindow');
 
-  const totCategoria = rows.reduce((acc, cur) => {
-    acc[cur.categoria] = (acc[cur.categoria] || 0) + cur.valor;
-    return acc;
-  }, {});
+function appendMessage(text, isUser) {
+  const wrapper = document.createElement('div');
+  wrapper.className = isUser ? 'text-end mb-2' : 'text-start mb-2';
+  const bubble = document.createElement('span');
+  bubble.className = isUser 
+    ? 'badge bg-primary text-wrap' 
+    : 'badge bg-secondary text-wrap';
+  bubble.style.maxWidth = '75%';
+  bubble.innerText = text;
+  wrapper.appendChild(bubble);
+  chatWindow.appendChild(wrapper);
+  chatWindow.scrollTop = chatWindow.scrollHeight;
+}
 
-  const userPrompt = document.getElementById('userPrompt').value.trim();
-  const payload = { 
-    resumo: { totCategoria, despesas: rows },
-    prompt: userPrompt 
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('btnAnalise');
+  if (btn) {
+    btn.addEventListener('click', async () => {
+      const promptEl = document.getElementById('userPrompt');
+      const userPrompt = promptEl.value.trim();
+      if (!userPrompt) return alert('Escreva um prompt antes de enviar.');
+
+      // limpa campo e adiciona prompt na conversa
+      promptEl.value = '';
+      appendMessage(userPrompt, true);
+
+      // monta os dados de despesas
+      const rows = window.despesasData.map(d => ({
+        valor: parseFloat(d.valor),
+        categoria: d.categoria,
+        data: d.data,
+        descricao: d.descricao
+      }));
+      const totCategoria = rows.reduce((acc, cur) => {
+        acc[cur.categoria] = (acc[cur.categoria]||0) + cur.valor;
+        return acc;
+      }, {});
+
+      // envia tudo para a IA
+      appendMessage('...', false);
+      try {
+        const res = await axios.post('../php/chatCohere.php', {
+          resumo: { totCategoria, despesas: rows },
+          prompt: userPrompt
+        });
+        // substitui o "..." pela resposta
+        chatWindow.lastChild.querySelector('span').innerText = res.data;
+      } catch (err) {
+        chatWindow.lastChild.querySelector('span').innerText = 'Erro: ' + err;
+      }
+    });
   };
-
-  const resultadoEl = document.getElementById('resultadoAnalise');
-  resultadoEl.innerText = 'Gerando análise...';
-
-  try {
-    const res = await axios.post('../php/chatCohere.php', payload);
-    resultadoEl.innerText = res.data;
-  } catch (err) {
-    resultadoEl.innerText = 'Erro: ' + err;
-  }
 });

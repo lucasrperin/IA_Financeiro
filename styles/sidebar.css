@@ -1,0 +1,84 @@
+/* largura do offcanvas (mobile) já definido: clamp(60px,20vw,100px) */
+.offcanvas-start {
+  --bs-offcanvas-width: clamp(60px, 30vw, 120px);
+}
+/* nav-pills vertical e alinhamento */
+.offcanvas-start .nav-pills {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* links: fonte e padding responsivos */
+.offcanvas-start .nav-link {
+  display: flex;
+  align-items: center;
+  font-size: clamp(0.75rem, 2.5vw, 1rem);
+  padding: clamp(0.25rem, 1.5vw, 0.5rem) clamp(0.5rem, 2vw, 1rem);
+}
+
+/* ícones: tamanho e margem responsivos */
+.offcanvas-start .nav-link i {
+  flex-shrink: 0;
+  font-size: clamp(0.9rem, 3vw, 1.2rem);
+  margin-right: clamp(0.25rem, 1vw, 0.5rem);
+}
+
+/* espaçamento entre itens */
+.offcanvas-start .nav-item {
+  margin-bottom: clamp(0.25rem, 1.5vw, 0.75rem);
+}
+
+/* desktop: largura padrão e transição */
+#sidebar {
+  --bs-offcanvas-width: 220px;
+  width: var(--bs-offcanvas-width);
+  transition: width .2s;
+}
+
+#sidebar.collapsed {
+  --bs-offcanvas-width: clamp(60px, 5vw, 80px);
+}
+
+#sidebar.collapsed .nav-link span,
+#sidebar.collapsed h5 {
+  display: none;
+}
+
+#sidebar.collapsed .nav-link {
+  justify-content: center;
+}
+
+/* centraliza o toggle-icon no header quando recolhido */
+#sidebar.collapsed .p-3 {
+  justify-content: center !important;
+}
+/* remove padding extra pra ficar certinho */
+#sidebar.collapsed .p-3 {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+/* garante que o ícone fique bem no meio */
+#sidebar.collapsed #sidebarToggleIcon {
+  margin: 0;
+}
+
+
+
+/* para desktop, mantém 220px e fontes/paddings “normais” */
+@media (min-width: 992px) {
+  .offcanvas-start {
+    --bs-offcanvas-width: 220px;
+  }
+  .offcanvas-start .nav-link {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+  .offcanvas-start .nav-link i {
+    font-size: 1.2rem;
+    margin-right: 0.5rem;
+  }
+  .offcanvas-start .nav-item {
+    margin-bottom: 0.75rem;
+  }
+}

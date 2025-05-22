@@ -1,4 +1,4 @@
-<div class="modal fade" id="addDespesaModal" tabindex="-1" aria-labelledby="addDespesaModalLabel" aria-hidden="true">
+<div class="modal fade" id="addDespesaModal" tabindex="-1" aria-labelledby="addDespesaModalLabel">
   <div class="modal-dialog">
     <div class="modal-content">
       <form action="../public/cadastrar_despesas.php" method="post">
