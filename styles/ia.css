@@ -1,0 +1,159 @@
+/* styles/ia.css */
+
+/* 1) Layout flexível para ocupar toda a altura disponível */
+.container-fluid .row > main {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 2rem); /* ajuste ao seu espaçamento superior */
+}
+
+/* 2) Janela de conversa cresce/encolhe */
+#chatWindow {
+flex: 1 1 auto;
+height: auto;
+overflow-y: auto;
+padding: 1rem;
+background: #ffffff;
+border-radius: 0.75rem;
+box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+display: flex;
+flex-direction: column;
+gap: 0.75rem;
+}
+
+/* 3) Campo de entrada sempre fixo embaixo */
+.input-group {
+  align-items: flex-end;
+  flex-shrink: 0;
+  background: #fff;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.03);
+  border-radius: 0.75rem;
+}
+
+/* 4) Textarea com tamanho mínimo e máximo, depois scroll interno */
+#userPrompt {
+  flex: 1;
+  resize: none;
+  overflow-y: auto;
+  min-height: 2.5rem;
+  max-height: 6rem;
+  border-radius: 0.75rem 0 0 0.75rem;
+  border-right: none;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  flex-direction: column;
+}
+
+/* styles/ia.css */
+
+/* wrapper da área de prompt */
+.prompt-wrapper {
+   gap: 0.5rem;
+  padding-top: 0.5rem;
+}
+
+/* textarea cresce até 6rem, depois scroll interno */
+.prompt-input {
+  min-height: 2.5rem;
+  max-height: 6rem;
+  overflow-y: auto;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  position: relative;
+}
+.prompt-input:empty:before {
+  content: attr(data-placeholder);
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  color: #6c757d;
+}
+
+/* controles fixos abaixo do textarea */
+.prompt-controls {
+  padding-top: .5rem;
+}
+
+/* 5) Botão de envio alinhado à textarea */
+.prompt-input {
+  min-height: 2.5rem;
+  max-height: 6rem;
+  overflow-y: auto;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  position: relative;
+}
+.prompt-input:empty:before {
+  content: attr(data-placeholder);
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  color: #6c757d;
+}
+#btnAnalise:hover {
+  transform: scale(1.05);
+}
+
+/* 6) Balões de mensagem */
+.message {
+  display: flex;
+  max-width: 75%;
+}
+.message.bot {
+  justify-content: flex-start;
+}
+.message.user {
+  justify-content: flex-end;
+  align-self: flex-end;
+}
+.message .bubble {
+  position: relative;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+.message.bot .bubble {
+  background: #e9f5ffa6;
+  color: #0056b3;
+}
+.message.user .bubble {
+  background: #d1ffd69f;
+  color: #1a4901;
+}
+
+/* 7) Setinhas dos balões */
+.message.bot .bubble::after {
+  content: "";
+  position: absolute;
+  left: -8px;
+  top: 12px;
+  border: 8px solid transparent;
+  border-right-color: #e9f5ff;
+}
+.message.user .bubble::after {
+  content: "";
+  position: absolute;
+  right: -8px;
+  top: 12px;
+  border: 8px solid transparent;
+  border-left-color: #d1ffd6;
+}
+
+/* 8) Scrollbar customizado */
+#chatWindow::-webkit-scrollbar {
+  width: 8px;
+}
+#chatWindow::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+#chatWindow::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+#chatWindow::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

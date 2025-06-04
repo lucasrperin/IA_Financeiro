@@ -1,3 +1,4 @@
+<!-- ia.php -->
 <?php
 include __DIR__ . '/../php/despesas_php.php';
 ?>
@@ -10,34 +11,36 @@ include __DIR__ . '/../php/despesas_php.php';
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
   <link href="../styles/sidebar.css" rel="stylesheet">
+  <link href="../styles/ia.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
 <body class="bg-light">
-    <?php
-        include __DIR__ . '/../components/sidebar.php';
-    ?>
-    <div class="container-fluid">
-        <div class="row">
-            <!-- Conteúdo Principal -->
-            <main class="col-12 col-lg-10 offset-lg-2">
-                <h1 class="mb-4">Chat IA – Despesas</h1>
+  <?php include __DIR__ . '/../components/sidebar.php'; ?>
+  <div class="container-fluid">
+    <div class="row">
+      <!-- ia.php -->
+<main class="col-12 col-lg-10 offset-lg-2 d-flex flex-column" style="height:100vh; padding:1rem;">
+  <h1 class="mb-4 flex-shrink-0">Chat IA – Despesas</h1>
+<!-- janela de conversa (maior que o prompt) -->
+  <div id="chatWindow" class="flex-grow-1 bg-white rounded shadow-sm overflow-auto mb-3"></div>
 
-                <!-- Janela de conversa -->
-                <div id="chatWindow"
-                class="border rounded p-3 mb-4 bg-white"
-                style="height:400px; overflow-y:auto;">
-                <!-- mensagens serão injetadas aqui -->
-                </div>
-
-                <!-- Campo de prompt -->
-                <div class="mb-3">
-                    <label for="userPrompt" class="form-label">Seu prompt</label>
-                    <textarea id="userPrompt" class="form-control" rows="2" placeholder="Escreva aqui seu prompt"></textarea>
-                </div>
-                <button id="btnAnalise" class="btn btn-success mb-5">Enviar</button>
-            </main>
-        </div>
+  <!-- wrapper do prompt -->
+  <div class="prompt-wrapper d-flex align-items-end flex-shrink-0">
+    <!-- caixa de texto como div -->
+    <div
+      id="promptDiv"
+      class="form-control prompt-input"
+      contenteditable="true"
+      data-placeholder="Digite sua mensagem...">
     </div>
+    <!-- botão fixo abaixo -->
+    <button id="btnAnalise" class="btn btn-primary">
+      <i class="fa-solid fa-paper-plane"></i>
+    </button>
+  </div>
+</main>
+    </div>
+  </div>
 
   <!-- Injeta dados para o script -->
   <script>
