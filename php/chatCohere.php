@@ -19,7 +19,7 @@ if (!$cohereKey) {
     exit;
 }
 
-// 2) Tratamento de saudações simples
+// 2) Tratamento de saudações simples (não envolve dados financeiros nem salário)
 $lc        = mb_strtolower($userPrompt, 'UTF-8');
 $greetings = ['bom dia', 'boa tarde', 'boa noite', 'olá', 'ola', 'oi'];
 if (in_array($lc, $greetings, true)) {
@@ -27,41 +27,76 @@ if (in_array($lc, $greetings, true)) {
     exit;
 }
 
-// 3) Detecta se é um pedido de análise financeira
+// 3) Detecta se é um pedido de análise financeira (inclui “salário” agora)
 $financeKeywords = [
     'despesa', 'despesas', 'receita', 'receitas',
     'fluxo de caixa', 'saldo', 'gasto', 'gastos',
     'lucro', 'investimento', 'orçamento', 'percentual',
-    'custo', 'contábil', 'balanço', 'análise'
+    'custo', 'contábil', 'balanço', 'análise',
+    'salário', 'salario'   // <- adicionadas
 ];
 $isFinance = false;
 foreach ($financeKeywords as $kw) {
-    if (stripos($userPrompt, $kw) !== false) {
+    if (stripos($lc, $kw) !== false) {
         $isFinance = true;
         break;
     }
 }
 
-// 4) Define o prompt de sistema com as regras
+// 4) Se for análise financeira (isto inclui qualquer menção a “salário”), buscamos o SALÁRIO
+$salarioTexto = "";
+if ($isFinance) {
+    $moduloSal = "despesas";
+    $chaveSal  = "salario";
+
+    $stmtSal = $conn->prepare("SELECT valor FROM parametros WHERE modulo = ? AND chave = ? LIMIT 1");
+    $stmtSal->bind_param("ss", $moduloSal, $chaveSal);
+    $stmtSal->execute();
+    $resSal = $stmtSal->get_result();
+
+    if ($resSal->num_rows > 0) {
+        $rowSal = $resSal->fetch_assoc();
+        $valorSalario = $rowSal['valor']; // ex.: "3500.00"
+        // Formata para notação brasileira (opcional):
+        setlocale(LC_ALL, 'pt_BR.UTF-8');
+        $salBr = number_format((float)$valorSalario, 2, ',', '.'); // ex.: "3.500,00"
+        $salarioTexto = "Salário mensal: R\$ {$salBr}\n\n";
+    } else {
+        // Se não houver nenhum salário cadastrado, avisamos no prompt
+        $salarioTexto = "Salário mensal não informado.\n\n";
+    }
+
+    $stmtSal->close();
+}
+
+// 5) Define o prompt de sistema com as regras
 $systemPrompt = <<<TXT
 Você é um assistente financeiro especializado em análise de dados financeiros empresariais e pessoais.
 
 Regras de interação:
-- Se o usuário solicitar algo relacionado a finanças (despesas, receitas, fluxo de caixa, orçamento, saldo etc.), utilize os dados de despesas fornecidos e forneça análise conforme o que o usuário solicitar.
-- Se o usuário fizer qualquer outra pergunta ou apenas conversar, responda de forma natural e coerente, SEM usar ou mencionar os dados de despesas.
+- Se o usuário solicitar algo relacionado a finanças (despesas, receitas, fluxo de caixa, orçamento, saldo etc.), utilize sempre o valor do salário (se houver) e os dados de despesas fornecidos para fornecer análise conforme solicitado.
+- Se o usuário fizer qualquer outra pergunta ou apenas conversar, responda de forma natural e coerente, SEM usar ou mencionar os dados de salário ou despesas.
 TXT;
 
-// 5) Monta o histórico de mensagens para a chamada de chat
+// 6) Monta o histórico de mensagens para a chamada de chat
+if ($isFinance) {
+    // Inclui SALÁRIO + DESPESAS no conteúdo do usuário
+    $conteudoUser = $userPrompt
+                  . "\n\n"
+                  . $salarioTexto
+                  . "Dados de despesas:\n"
+                  . json_encode($resumo, JSON_PRETTY_PRINT);
+} else {
+    // Para qualquer outra pergunta, apenas o texto do usuário
+    $conteudoUser = $userPrompt;
+}
+
 $messages = [
-    ['role' => 'system',  'content' => $systemPrompt],
-    ['role' => 'user',    'content' => $isFinance
-        // inclui dados de despesas apenas para pedidos financeiros
-        ? $userPrompt . "\n\nDados de despesas:\n" . json_encode($resumo, JSON_PRETTY_PRINT)
-        : $userPrompt
-    ]
+    ['role' => 'system', 'content' => $systemPrompt],
+    ['role' => 'user',   'content' => $conteudoUser]
 ];
 
-// 6) Chama a API de chat da Cohere
+// 7) Chama a API de chat da Cohere
 $payload = json_encode([
     'model'       => 'command-r-plus',
     'messages'    => $messages,
@@ -95,4 +130,5 @@ if ($httpCode !== 200) {
 }
 
 $data = json_decode($response, true);
-echo $data['message']['content'][0]['text'] ?? 'Erro: resposta inválida da Cohere API.';
+echo $data['message']['content'][0]['text'] 
+     ?? 'Erro: resposta inválida da Cohere API.';
