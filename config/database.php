@@ -7,7 +7,7 @@ $banco    = 'controle_financeiro';
 
 
 // Cria a conexão
-$conn = new mysqli($host, $usuario, $senha, $banco, $porta);
+$conn = new mysqli($host, $usuario, $senha, $banco);
 
 // Verifica erros
 if ($conn->connect_error) {

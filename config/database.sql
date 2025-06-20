@@ -10,6 +10,13 @@ CREATE TABLE IF NOT EXISTS despesas (
   descricao VARCHAR(255)
 );
 
+CREATE TABLE IF NOT EXISTS parametros (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  modulo VARCHAR(100) UNIQUE NOT NULL,
+  chave VARCHAR(100) UNIQUE,
+  valor TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS settings (
   id INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) UNIQUE NOT NULL,
@@ -17,5 +24,6 @@ CREATE TABLE IF NOT EXISTS settings (
 );
 
 INSERT IGNORE INTO settings (name, value) VALUES ('cohere_api_key', '');
+
 
 
